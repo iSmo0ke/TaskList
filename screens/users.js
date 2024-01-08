@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native';
-import { addUser, removeUser } from '../redux/features/users';
+import { addUser, removeUser, toggleComplete } from '../redux/features/users';
 
 export default function UsersScreen() {
     const dispatch = useDispatch();
@@ -11,7 +11,7 @@ export default function UsersScreen() {
 
     const addItem = () => {
         if (value.length > 0) {
-            dispatch(addUser(value));
+            dispatch(addUser({ task: value, completed: false }));
             setValue("");
         } else {
             alert("Campo vacío, ingresa una tarea");
@@ -22,11 +22,23 @@ export default function UsersScreen() {
         dispatch(removeUser(item));
     };
 
+    const toggleCompleteItem = (item) => {
+        dispatch(toggleComplete(item));
+    };
+
     const renderItem = ({ item }) => {
         return (
-            <View style={styles.boxElement}>
-                <Text style={styles.text}>{item}</Text>
-                <Button color="#14DE04" title='Completar' onPress={() => removeItem(item)}></Button>
+            <View style={[styles.boxElement, { borderColor: item.completed ? 'green' : 'purple' }]}>
+                <Text style={[styles.text, { textDecorationLine: item.completed ? 'line-through' : 'none' }]}>
+                    {item.task}
+                </Text>
+                <Button
+                    color={item.completed ? 'gray' : '#14DE04'}
+                    title={item.completed ? 'Completado' : 'Completar'}
+                    onPress={() => toggleCompleteItem(item)}
+                    disabled={item.completed}
+                />
+                <Button color="#FF0000" title="Eliminar" onPress={() => removeItem(item)} />
             </View>
         );
     };
@@ -34,17 +46,16 @@ export default function UsersScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.backgroundContainer}>
-            <Text style={styles.supTitle}>Mis tareas del día</Text>
+                <Text style={styles.supTitle}>Mis tareas del día</Text>
             </View>
 
             <View style={styles.overlayContainer}>
-
                 <View style={styles.contentContainer}>
                     <View style={styles.addElement}>
                         <TextInput
                             value={value}
                             placeholder='¿Cuál es la tarea del día?'
-                            onChangeText={(item) => setValue(item)}
+                            onChangeText={(text) => setValue(text)}
                             style={{
                                 width: 250,
                                 borderBottomWidth: 1,
@@ -60,7 +71,7 @@ export default function UsersScreen() {
                         <FlatList
                             data={list}
                             renderItem={renderItem}
-                            keyExtractor={item => item}
+                            keyExtractor={(item, index) => `${index}`}
                         />
                     ) : (
                         <Text style={styles.text}>No tienes tareas pendientes</Text>
@@ -72,6 +83,8 @@ export default function UsersScreen() {
         </View>
     );
 }
+
+
 
 const styles = StyleSheet.create({
     supTitle: {
