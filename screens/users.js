@@ -15,7 +15,7 @@ export default function UsersScreen() {
             dispatch(addUser(value));
             setValue("");
         }else{
-            alert("Ingrese un nombre!!");
+            alert("Campo vacio, ingresa una tarea");
         }
     };
 
@@ -25,22 +25,22 @@ export default function UsersScreen() {
 
     const renderItem = ({ item }) =>{
         return(
-            <View>
+            <View style={({flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 200})}>
                 <Text style={styles.text}>{item}</Text>
                 <Button color="red" title='Quitar' onPress={() => removeItem(item)}></Button>
             </View>
         );
     };
 
-    console.log(value)
+    console.log(list)
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Agregar usuarios</Text>
+            <Text style={styles.title}>Mis tareas del dia</Text>
             <View style={styles.addElement}>
                 <TextInput 
                 value={value}
-                placeholder='Ingrese usuario'
+                placeholder='¿Cual es la tarea del dia?'
                 onChangeText={(item) => setValue(item)}
                 style={{
                     width:250,
@@ -53,19 +53,19 @@ export default function UsersScreen() {
                 />
             </View>
 
-            <Text style={styles.title}>Lista de usuarios</Text>
+            <Text style={styles.title}>Lista de tareas</Text>
             
             <View>
                 {
-                    (list ?? []).length > 0 ?
+                    list.length > 0 ?
                         <FlatList
-                            style={{ width: "100%" }}
+                            //style={({ width: "100%" })}
                             data={list}
-                            renderItem={({item}) => renderItem(item)}
+                            renderItem =  {renderItem}
                             keyExtractor={item => item}
                         />
                         :
-                        <Text style={styles.text}>No hay usuarios</Text>
+                        <Text style={styles.text}>No tienes tareas pendientes</Text>
                 }
             </View>
 
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
 
     text: {
         fontSize: 15,
-        color: "gray",
+        color: "black",
         fontStyle: "italic",
         fontWeight: "bold"
     },
