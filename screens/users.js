@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native';
-import { addUser, removeUser, toggleComplete } from '../redux/features/users';
+import { addUser, removeUser } from '../redux/features/users';
 
 export default function UsersScreen() {
     const dispatch = useDispatch();
@@ -11,7 +11,7 @@ export default function UsersScreen() {
 
     const addItem = () => {
         if (value.length > 0) {
-            dispatch(addUser({ task: value, completed: false }));
+            dispatch(addUser(value));
             setValue("");
         } else {
             alert("Campo vacío, ingresa una tarea");
@@ -22,23 +22,11 @@ export default function UsersScreen() {
         dispatch(removeUser(item));
     };
 
-    const toggleCompleteItem = (item) => {
-        dispatch(toggleComplete(item));
-    };
-
-    const renderItem = ({ item }) => {
-        return (
-            <View style={[styles.boxElement, { borderColor: item.completed ? 'green' : 'purple' }]}>
-                <Text style={[styles.text, { textDecorationLine: item.completed ? 'line-through' : 'none' }]}>
-                    {item.task}
-                </Text>
-                <Button
-                    color={item.completed ? 'gray' : '#14DE04'}
-                    title={item.completed ? 'Completado' : 'Completar'}
-                    onPress={() => toggleCompleteItem(item)}
-                    disabled={item.completed}
-                />
-                <Button color="#FF0000" title="Eliminar" onPress={() => removeItem(item)} />
+    const renderItem = ({ item }) =>{
+        return(
+            <View style={({flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 200})}>
+                <Text style={styles.text}>{item}</Text>
+                <Button color="red" title='Quitar' onPress={() => removeItem(item)}></Button>
             </View>
         );
     };
@@ -71,7 +59,7 @@ export default function UsersScreen() {
                         <FlatList
                             data={list}
                             renderItem={renderItem}
-                            keyExtractor={(item, index) => `${index}`}
+                            keyExtractor={item => item}
                         />
                     ) : (
                         <Text style={styles.text}>No tienes tareas pendientes</Text>
